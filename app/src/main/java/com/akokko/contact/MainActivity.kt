@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     val btnInput by lazy { findViewById<Button>(R.id.btn_input) }
     val btnDelete by lazy { findViewById<Button>(R.id.btn_delete) }
     val btnContact by lazy { findViewById<Button>(R.id.btn_contact) }
+    val btnUpdate by lazy { findViewById<Button>(R.id.btn_update) }
 
     // 获取数据库操作类
     private val dbHelper: DBHelper by lazy { DBHelper(this@MainActivity) }
@@ -41,8 +42,9 @@ class MainActivity : AppCompatActivity() {
             val name: String = textName?.text?.trim().toString()
             val telNum: String = textTelNum?.text?.trim().toString()
 
-            Log.d(null, name)
-            Log.d(null, telNum)
+            // Test
+            /*Log.d(null, name)
+            Log.d(null, telNum)*/
 
             name.run {
                 if (isEmpty()) {
@@ -84,6 +86,33 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "删除失败！", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // 绑定更新按钮点击事件
+        btnUpdate.setOnClickListener {
+            // 获取数据
+            val name: String = textName.text.trim().toString()
+            name.run {
+                if (isEmpty()) {
+                    Toast.makeText(this@MainActivity, "更新姓名为空！", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+            } ?: return@setOnClickListener
+            val telNum: String = textTelNum?.text?.trim().toString()
+            telNum.run {
+                if (isEmpty()) {
+                    Toast.makeText(this@MainActivity, "更新电话号码为空！", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+            } ?: return@setOnClickListener
+
+            if (dbHelper.updatePerson(name, telNum)) {
+                Toast.makeText(this@MainActivity, "更新成功！", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@MainActivity, "更新失败！", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
         // 绑定跳转通讯录按钮点击事件
         btnContact.setOnClickListener {
             val intent = Intent()

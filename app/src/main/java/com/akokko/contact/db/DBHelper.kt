@@ -28,8 +28,8 @@ class DBHelper(
         val cv = ContentValues()
         cv.put("name", name)
         cv.put("tel", telNumber)
-        val x = db.insert("contactList", null, cv)
-        return x > 0
+        val flag = db.insert("contactList", null, cv)
+        return flag > 0
     }
 
     fun deletePerson(name: String): Boolean {
@@ -37,12 +37,42 @@ class DBHelper(
         return flag > 0
     }
 
+    fun updatePerson(name: String, telNumber: String): Boolean {
+        if (getOnePerson(name)) {
+            val cv = ContentValues()
+            cv.put("name", name)
+            cv.put("tel", telNumber)
+            val flag = db.update("contactList", cv, "name=?", Array(1){name})
+            return flag > 0
+        }
+        return false
+    }
+
+    private fun getOnePerson(name: String): Boolean {
+        val cursor = db.rawQuery("select name from contactList where name = ?", Array(1){name})
+        while (cursor.moveToNext()) {
+            /*@SuppressLint("Range")
+            val name = cursor.getString(cursor.getColumnIndex("name"))
+            @SuppressLint("Range")
+            val tel = cursor.getString(cursor.getColumnIndex("tel"))*/
+
+            val name = cursor.getString(0)
+            // val tel = cursor.getString(0)
+
+            return !(name.isNullOrEmpty())
+        }
+        return true
+    }
+
     fun getAllPerson(): ArrayList<Person> {
         val personList = ArrayList<Person>()
         val cursor = db.query("contactList", null,null,null,null,null,null)
         while (cursor.moveToNext()) {
-            @SuppressLint("Range") val name = cursor.getString(cursor.getColumnIndex("name"))
-            @SuppressLint("Range") val tel = cursor.getString(cursor.getColumnIndex("tel"))
+            @SuppressLint("Range")
+            val name = cursor.getString(cursor.getColumnIndex("name"))
+            @SuppressLint("Range")
+            val tel = cursor.getString(cursor.getColumnIndex("tel"))
+
             val person = Person(name, tel)
             personList.add(person)
         }
